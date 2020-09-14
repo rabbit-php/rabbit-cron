@@ -115,7 +115,7 @@ class CronExpression extends CronCronExpression
 
         if (isset($parts[3]) && isset($parts[5])) {
             $domExpression = sprintf('%s %s %s %s %s *', $this->getExpression(0), $this->getExpression(1), $this->getExpression(2), $this->getExpression(3), $this->getExpression(4));
-            $dowExpression = sprintf('%s %s %s * %s %s', $this->getExpression(0), $this->getExpression(1), $this->getExpression(3), $this->getExpression(4), $this->getExpression(5));
+            $dowExpression = sprintf('%s %s %s * %s %s', $this->getExpression(0), $this->getExpression(1), $this->getExpression(2), $this->getExpression(4), $this->getExpression(5));
 
             $domExpression = new self($domExpression);
             $dowExpression = new self($dowExpression);
