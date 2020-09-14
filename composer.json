@@ -1,0 +1,20 @@
+{
+  "name": "rabbit/cron",
+  "description": "rabbit cron",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "albert",
+      "email": "63851587@qq.com"
+    }
+  ],
+  "require": {
+    "dragonmantank/cron-expression": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Rabbit\\Cron\\": "src/"
+    }
+  }
+}
