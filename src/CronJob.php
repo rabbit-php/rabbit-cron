@@ -38,7 +38,7 @@ class CronJob
      */
     public function add(string $name, array $job, bool $existThrow = true): void
     {
-        if (isset($this->jobs[$name])) {
+        if ($this->table->exist($name)) {
             if ($existThrow) {
                 throw new InvalidArgumentException("Job $name exists");
             }
