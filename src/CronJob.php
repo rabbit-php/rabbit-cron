@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Rabbit\Cron;
 
+use Swoole\Table;
 use Rabbit\Base\App;
 use Rabbit\Base\Core\Timer;
 use Rabbit\Base\Exception\InvalidArgumentException;
-use Swoole\Table;
 
 class CronJob
 {
@@ -16,19 +16,17 @@ class CronJob
 
     protected array $jobs = [];
 
-    private Table $table;
+    private StorageInterface $storage;
     /**
-     * @author Albert <63851587@qq.com>
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-09-22
+     * @param StorageInterface $storage
      * @param array $jobs
      */
-    public function __construct(array $jobs = [])
+    public function __construct(StorageInterface $storage, array $jobs = [])
     {
-        $this->table = new Table(1024);
-        $this->table->column('worker_id', Table::TYPE_INT);
-        $this->table->column('run', Table::TYPE_STRING, 16);
-        $this->table->column('next', Table::TYPE_STRING, 19);
-        $this->table->create();
         $this->jobs = $jobs;
+        $this->storage = $storage;
     }
     /**
      * @author Albert <63851587@qq.com>
@@ -38,7 +36,7 @@ class CronJob
      */
     public function add(string $name, array $job, bool $existThrow = true): void
     {
-        if ($this->table->exist($name)) {
+        if ($this->storage->exist($name)) {
             if ($existThrow) {
                 throw new InvalidArgumentException("Job $name exists");
             }
@@ -59,7 +57,7 @@ class CronJob
         if (!isset($this->jobs[$name])) {
             return true;
         }
-        $this->table->set($name, ['run' => self::STATUS_STOP]);
+        $this->storage->set($name, ['run' => self::STATUS_STOP]);
         return Timer::stopTimer($name);
     }
     /**
@@ -70,6 +68,7 @@ class CronJob
     public function remove(string $name): void
     {
         $this->stop($name);
+        $this->storage->del($name);
         unset($this->jobs[$name]);
     }
     /**
@@ -111,11 +110,11 @@ class CronJob
         $next2 = $cron->getNextRunDate(null, 1)->getTimestamp();
         $tick = $next2 - $next1;
 
-        $this->table->set($name, ['worker_id' => App::$id, 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
+        $this->storage->set($name, ['worker_id' => App::$id, 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
 
         Timer::addAfterTimer(($next1 - time()) * 1000, function () use ($name, $function, $tick) {
             Timer::addTickTimer($tick * 1000, function () use ($name, $function, $tick) {
-                $this->table->set($name, ['next' => date('Y-m-d H:i:s', time() + $tick)]);
+                $this->storage->set($name, ['next' => date('Y-m-d H:i:s', time() + $tick)]);
                 $function();
             }, $name);
             $function();
@@ -131,11 +130,12 @@ class CronJob
         return $this->jobs;
     }
     /**
-     * @author Albert <63851587@qq.com>
-     * @return Table
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-09-22
+     * @return StorageInterface
      */
-    public function getTable(): Table
+    public function getStorage(): StorageInterface
     {
-        return $this->table;
+        return $this->storage;
     }
 }

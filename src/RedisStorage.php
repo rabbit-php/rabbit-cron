@@ -1,0 +1,72 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Rabbit\Cron;
+
+use Rabbit\DB\Redis\Redis;
+
+class RedisStorage implements StorageInterface
+{
+    protected Redis $redis;
+    /**
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-09-22
+     * @param \Rabbit\DB\Redis\Redis $redis
+     */
+    public function __construct(Redis $redis)
+    {
+        $this->redis = $redis;
+    }
+    /**
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-09-22
+     * @param string $name
+     * @param string|null $column
+     * @return void
+     */
+    public function get(string $name, ?string $column = null)
+    {
+        $ret = $this->redis->get($name);
+        if (!$ret) {
+            return $ret;
+        }
+        $arr = json_decode($ret, true);
+        if ($column !== null) {
+            return isset($arr[$column]) ? $arr[$column] : null;
+        }
+        return $arr;
+    }
+    /**
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-09-22
+     * @param string $name
+     * @param array $values
+     * @return void
+     */
+    public function set(string $name, array $values): void
+    {
+        ($ret = $this->get($name)) && $values = array_merge($ret, $values);
+        $this->redis->set($name, $values);
+    }
+    /**
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-09-22
+     * @param string $name
+     * @return boolean
+     */
+    public function exist(string $name): bool
+    {
+        return $this->redis->exist($name);
+    }
+    /**
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-09-22
+     * @param string $name
+     * @return void
+     */
+    public function del(string $name): void
+    {
+        $this->redis->delete($name);
+    }
+}
