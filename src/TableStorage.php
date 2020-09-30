@@ -31,7 +31,7 @@ class TableStorage implements StorageInterface
      */
     public function get(string $name, string $column = null)
     {
-        return $this->table->get($name, $column);
+        return $column ? $this->table->get($name, $column) : $this->table->get($name);
     }
     /**
      * @Author Albert 63851587@qq.com
@@ -42,7 +42,7 @@ class TableStorage implements StorageInterface
      */
     public function set(string $name, array $values): void
     {
-        $this->table->set($name, ['run' => CronJob::STATUS_STOP]);
+        $this->table->set($name, $values);
     }
     /**
      * @Author Albert 63851587@qq.com

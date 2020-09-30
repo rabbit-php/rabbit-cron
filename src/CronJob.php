@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rabbit\Cron;
 
-use Swoole\Table;
+
 use Rabbit\Base\App;
 use Rabbit\Base\Core\Timer;
 use Rabbit\Base\Exception\InvalidArgumentException;
@@ -34,7 +34,7 @@ class CronJob
      * @param array $job
      * @return void
      */
-    public function add(string $name, array $job, bool $existThrow = true): void
+    public function add(string $name, array $job, bool $autoRun = true, bool $existThrow = true): void
     {
         if ($this->storage->exist($name)) {
             if ($existThrow) {
@@ -46,6 +46,7 @@ class CronJob
             throw new InvalidArgumentException("Job is not callable");
         }
         $this->jobs[$name] = $job;
+        $autoRun && $this->run($name);
     }
     /**
      * @author Albert <63851587@qq.com>
@@ -57,8 +58,8 @@ class CronJob
         if (!isset($this->jobs[$name])) {
             return true;
         }
-        $this->storage->set($name, ['run' => self::STATUS_STOP]);
-        return Timer::stopTimer($name);
+        $this->storage->set($name, ['worker_id' => -1, 'run' => self::STATUS_STOP, 'next' => '']);
+        return Timer::clearTimerByName($name);
     }
     /**
      * @author Albert <63851587@qq.com>
