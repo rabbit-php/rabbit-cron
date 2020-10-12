@@ -10,4 +10,5 @@ interface StorageInterface
     public function set(string $name, array $values): void;
     public function exist(string $name): bool;
     public function del(string $name): void;
+    public function incr(string $name, string $column, int $incrby = 1): void;
 }

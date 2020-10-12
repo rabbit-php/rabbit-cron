@@ -36,9 +36,9 @@ class CronJob
      */
     public function add(string $name, array $job, bool $autoRun = true, bool $existThrow = true): void
     {
-        if ($this->storage->exist($name)) {
+        if ($this->storage->exist($name) && $this->storage->get($name)['run'] === self::STATUS_RUNNING) {
             if ($existThrow) {
-                throw new InvalidArgumentException("Job $name exists");
+                throw new InvalidArgumentException("Job $name running");
             }
             return;
         }
@@ -114,8 +114,10 @@ class CronJob
         $this->storage->set($name, ['worker_id' => App::$id, 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
 
         Timer::addAfterTimer(($next1 - time()) * 1000, function () use ($name, $function, $tick) {
+            $this->storage->incr($name, 'times');
             Timer::addTickTimer($tick * 1000, function () use ($name, $function, $tick) {
                 $this->storage->set($name, ['next' => date('Y-m-d H:i:s', time() + $tick)]);
+                $this->storage->incr($name, 'times');
                 $function();
             }, $name);
             $function();

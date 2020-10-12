@@ -20,6 +20,7 @@ class TableStorage implements StorageInterface
         $this->table->column('worker_id', Table::TYPE_INT);
         $this->table->column('run', Table::TYPE_STRING, 16);
         $this->table->column('next', Table::TYPE_STRING, 19);
+        $this->table->column('times', Table::TYPE_INT);
         $this->table->create();
     }
     /**
@@ -63,5 +64,17 @@ class TableStorage implements StorageInterface
     public function del(string $name): void
     {
         $this->table->del($name);
+    }
+    /**
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-10-12
+     * @param string $name
+     * @param string $column
+     * @param integer $incrby
+     * @return void
+     */
+    public function incr(string $name, string $column, int $incrby = 1): void
+    {
+        $this->table->incr($name, $column, $incrby);
     }
 }

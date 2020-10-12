@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rabbit\Cron;
 
 use Rabbit\DB\Redis\Redis;
+use Rabbit\Base\Helper\ArrayHelper;
 
 class RedisStorage implements StorageInterface
 {
@@ -68,5 +69,18 @@ class RedisStorage implements StorageInterface
     public function del(string $name): void
     {
         $this->redis->delete($name);
+    }
+    /**
+     * @Author Albert 63851587@qq.com
+     * @DateTime 2020-10-12
+     * @param string $name
+     * @param string $column
+     * @param integer $incrby
+     * @return void
+     */
+    public function incr(string $name, string $column, int $incrby = 1): void
+    {
+        ($ret = $this->get($name)) && $ret[$column] = ArrayHelper::getValue($ret, $column, 0) + 1;
+        $this->redis->set($name, $ret);
     }
 }
