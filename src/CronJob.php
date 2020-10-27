@@ -58,7 +58,7 @@ class CronJob
         if (!isset($this->jobs[$name])) {
             return true;
         }
-        $this->storage->set($name, ['worker_id' => -1, 'run' => self::STATUS_STOP, 'next' => '']);
+        $this->storage->del($name);
         return Timer::clearTimerByName($name);
     }
     /**
@@ -69,7 +69,6 @@ class CronJob
     public function remove(string $name): void
     {
         $this->stop($name);
-        $this->storage->del($name);
         unset($this->jobs[$name]);
     }
     /**
@@ -111,7 +110,7 @@ class CronJob
         $next2 = $cron->getNextRunDate(null, 1)->getTimestamp();
         $tick = $next2 - $next1;
 
-        $this->storage->set($name, ['worker_id' => App::$id, 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
+        $this->storage->set($name, ['worker_id' => App::$id ?? 0, 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
 
         Timer::addAfterTimer(($next1 - time()) * 1000, function () use ($name, $function, $tick) {
             $this->storage->incr($name, 'times');
