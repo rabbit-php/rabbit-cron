@@ -10,6 +10,8 @@
     }
   ],
   "require": {
+    "php": ">=7.4.0",
+    "rabbit/base": "dev-master",
     "dragonmantank/cron-expression": "^3.0"
   },
   "autoload": {
