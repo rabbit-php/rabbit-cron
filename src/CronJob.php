@@ -11,8 +11,8 @@ use Rabbit\Base\Exception\InvalidArgumentException;
 
 class CronJob
 {
-    const STATUS_STOP = 'stop';
-    const STATUS_RUNNING = 'running';
+    const STATUS_STOP = 0;
+    const STATUS_RUNNING = 1;
 
     protected array $jobs = [];
 
@@ -110,7 +110,7 @@ class CronJob
         $next2 = $cron->getNextRunDate(null, 1)->getTimestamp();
         $tick = $next2 - $next1;
 
-        $this->storage->set($name, ['worker_id' => App::$id ?? getmypid(), 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
+        $this->storage->set($name, ['worker_id' => getmypid(), 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
 
         Timer::addAfterTimer(($next1 - time()) * 1000, function () use ($name, $function, $tick) {
             $this->storage->incr($name, 'times');

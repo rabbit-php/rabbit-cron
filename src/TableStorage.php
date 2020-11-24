@@ -18,7 +18,7 @@ class TableStorage implements StorageInterface
     {
         $this->table = new Table($size);
         $this->table->column('worker_id', Table::TYPE_INT);
-        $this->table->column('run', Table::TYPE_STRING, 16);
+        $this->table->column('run', Table::TYPE_INT);
         $this->table->column('next', Table::TYPE_STRING, 19);
         $this->table->column('times', Table::TYPE_INT);
         $this->table->create();
