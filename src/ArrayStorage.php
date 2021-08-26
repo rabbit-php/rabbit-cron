@@ -48,6 +48,7 @@ class ArrayStorage implements StorageInterface
     public function del(string $name): void
     {
         unset($this->table[$name]);
+        $this->table = array_slice($this->table, 0, null, true);
     }
     /**
      * @Author Albert 63851587@qq.com
