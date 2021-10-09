@@ -70,7 +70,6 @@ class CronJob
     {
         $this->stop($name);
         unset($this->jobs[$name]);
-        $this->jobs = array_slice($this->jobs, 0, null, true);
     }
     /**
      * @author Albert <63851587@qq.com>
