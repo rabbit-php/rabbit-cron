@@ -45,7 +45,7 @@ class SecondField extends AbstractField
         $parts = false !== strpos($parts, ',') ? explode(',', $parts) : [$parts];
         $seconds = [];
         foreach ($parts as $part) {
-            $seconds = array_merge($seconds, $this->getRangeForExpression($part, 59));
+            $seconds = [...$seconds, ...$this->getRangeForExpression($part, 59)];
         }
 
         $current_second = $date->format('s');

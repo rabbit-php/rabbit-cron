@@ -123,7 +123,7 @@ class CronExpression extends CronCronExpression
             $domRunDates = $domExpression->getMultipleRunDates($nth + 1, $currentTime, $invert, $allowCurrentDate, $timeZone);
             $dowRunDates = $dowExpression->getMultipleRunDates($nth + 1, $currentTime, $invert, $allowCurrentDate, $timeZone);
 
-            $combined = array_merge($domRunDates, $dowRunDates);
+            $combined = [...$domRunDates, ...$dowRunDates];
             usort($combined, function ($a, $b) {
                 return $a->format('Y-m-d H:i:s') <=> $b->format('Y-m-d H:i:s');
             });
