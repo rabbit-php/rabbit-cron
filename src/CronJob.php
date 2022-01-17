@@ -15,18 +15,15 @@ class CronJob
     const STATUS_RUNNING = 1;
 
     protected array $jobs = [];
-
-    private StorageInterface $storage;
     /**
      * @Author Albert 63851587@qq.com
      * @DateTime 2020-09-22
      * @param StorageInterface $storage
      * @param array $jobs
      */
-    public function __construct(StorageInterface $storage, array $jobs = [])
+    public function __construct(private readonly StorageInterface $storage, array $jobs = [])
     {
         $this->jobs = $jobs;
-        $this->storage = $storage;
     }
     /**
      * @author Albert <63851587@qq.com>

@@ -22,7 +22,7 @@ class CronExpression extends CronCronExpression
     public const WEEKDAY = 5;
     public const YEAR = 6;
 
-    private $fieldFactory;
+    private readonly FieldFactory $fieldFactory;
 
     private $maxIterationCount = 1000;
 
@@ -49,7 +49,7 @@ class CronExpression extends CronCronExpression
             $expression = $mappings[$shortcut];
         }
 
-        return new static($expression, $fieldFactory ?: new FieldFactory());
+        return new static($expression, $fieldFactory ?? new FieldFactory());
     }
     /**
      * @author Albert <63851587@qq.com>
@@ -58,7 +58,7 @@ class CronExpression extends CronCronExpression
      */
     public function __construct(string $expression, FieldFactory $fieldFactory = null)
     {
-        $this->fieldFactory = $fieldFactory ?: new FieldFactory();
+        $this->fieldFactory = $fieldFactory ?? new FieldFactory();
         $this->setExpression($expression);
     }
 

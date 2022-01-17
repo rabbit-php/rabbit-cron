@@ -9,15 +9,8 @@ use Rabbit\Base\Helper\ArrayHelper;
 
 class RedisStorage implements StorageInterface
 {
-    protected Redis $redis;
-    /**
-     * @Author Albert 63851587@qq.com
-     * @DateTime 2020-09-22
-     * @param \Rabbit\DB\Redis\Redis $redis
-     */
-    public function __construct(Redis $redis)
+    public function __construct(protected readonly Redis $redis)
     {
-        $this->redis = $redis;
     }
     /**
      * @Author Albert 63851587@qq.com

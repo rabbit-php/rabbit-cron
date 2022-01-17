@@ -8,7 +8,7 @@ use Swoole\Table;
 
 class TableStorage implements StorageInterface
 {
-    private Table $table;
+    private readonly Table $table;
     /**
      * @Author Albert 63851587@qq.com
      * @DateTime 2020-09-22
