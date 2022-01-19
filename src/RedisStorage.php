@@ -9,7 +9,7 @@ use Rabbit\Base\Helper\ArrayHelper;
 
 class RedisStorage implements StorageInterface
 {
-    public function __construct(protected readonly Redis $redis)
+    public function __construct(protected Redis $redis)
     {
     }
     /**

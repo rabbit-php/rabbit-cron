@@ -22,7 +22,9 @@ class CronExpression extends CronCronExpression
     public const WEEKDAY = 5;
     public const YEAR = 6;
 
-    private readonly FieldFactory $fieldFactory;
+    private static $registeredAliases = self::MAPPINGS;
+
+    private FieldFactory $fieldFactory;
 
     private $maxIterationCount = 1000;
 
@@ -35,20 +37,6 @@ class CronExpression extends CronCronExpression
      */
     public static function factory(string $expression, FieldFactoryInterface $fieldFactory = null): CronExpression
     {
-        $mappings = [
-            '@yearly' => '0 0 1 1 *',
-            '@annually' => '0 0 1 1 *',
-            '@monthly' => '0 0 1 * *',
-            '@weekly' => '0 0 * * 0',
-            '@daily' => '0 0 * * *',
-            '@hourly' => '0 * * * *',
-        ];
-
-        $shortcut = strtolower($expression);
-        if (isset($mappings[$shortcut])) {
-            $expression = $mappings[$shortcut];
-        }
-
         return new static($expression, $fieldFactory ?? new FieldFactory());
     }
     /**
@@ -58,21 +46,11 @@ class CronExpression extends CronCronExpression
      */
     public function __construct(string $expression, FieldFactory $fieldFactory = null)
     {
+        $shortcut = strtolower($expression);
+        $expression = static::$registeredAliases[$shortcut] ?? $expression;
+
         $this->fieldFactory = $fieldFactory ?? new FieldFactory();
         $this->setExpression($expression);
-    }
-
-    public function setPart(int $position, string $value): CronExpression
-    {
-        if (!$this->fieldFactory->getField($position)->validate($value)) {
-            throw new InvalidArgumentException(
-                'Invalid CRON field value ' . $value . ' at position ' . $position
-            );
-        }
-
-        $this->cronParts[$position] = $value;
-
-        return $this;
     }
 
     /**
@@ -127,6 +105,9 @@ class CronExpression extends CronCronExpression
             usort($combined, function ($a, $b) {
                 return $a->format('Y-m-d H:i:s') <=> $b->format('Y-m-d H:i:s');
             });
+            if ($invert) {
+                $combined = array_reverse($combined);
+            }
 
             return $combined[$nth];
         }
@@ -139,10 +120,10 @@ class CronExpression extends CronCronExpression
                 $field = $fields[$position];
                 // Check if this is singular or a list
                 if (false === strpos($part, ',')) {
-                    $satisfied = $field->isSatisfiedBy($nextRun, $part);
+                    $satisfied = $field->isSatisfiedBy($nextRun, $part, $invert);
                 } else {
                     foreach (array_map('trim', explode(',', $part)) as $listPart) {
-                        if ($field->isSatisfiedBy($nextRun, $listPart)) {
+                        if ($field->isSatisfiedBy($nextRun, $listPart, $invert)) {
                             $satisfied = true;
 
                             break;

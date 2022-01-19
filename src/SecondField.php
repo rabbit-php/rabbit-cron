@@ -19,7 +19,7 @@ class SecondField extends AbstractField
      * @param [type] $value
      * @return boolean
      */
-    public function isSatisfiedBy(DateTimeInterface $date, $value): bool
+    public function isSatisfiedBy(DateTimeInterface $date, $value, bool $invert): bool
     {
         if ($value == '?') {
             return true;

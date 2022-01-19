@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Rabbit\Cron;
 
-
-use Rabbit\Base\App;
 use Rabbit\Base\Core\Timer;
 use Rabbit\Base\Exception\InvalidArgumentException;
 
@@ -21,7 +19,7 @@ class CronJob
      * @param StorageInterface $storage
      * @param array $jobs
      */
-    public function __construct(private readonly StorageInterface $storage, array $jobs = [])
+    public function __construct(private StorageInterface $storage, array $jobs = [])
     {
         $this->jobs = $jobs;
     }
