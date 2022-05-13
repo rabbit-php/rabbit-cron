@@ -108,8 +108,16 @@ class CronJob
         $this->storage->set($name, ['worker_id' => getmypid(), 'run' => self::STATUS_RUNNING, 'next' => date('Y-m-d H:i:s', $next1)]);
 
         Timer::addAfterTimer(($next1 - time()) * 1000, function () use ($name, $function, $tick): void {
+            if (!$this->storage->exist($name)) {
+                Timer::clearTimerByName($name);
+                return;
+            }
             $this->storage->incr($name, 'times');
             Timer::addTickTimer($tick * 1000, function () use ($name, $function, $tick): void {
+                if (!$this->storage->exist($name)) {
+                    Timer::clearTimerByName($name);
+                    return;
+                }
                 $this->storage->set($name, ['next' => date('Y-m-d H:i:s', time() + $tick)]);
                 $this->storage->incr($name, 'times');
                 $function();
