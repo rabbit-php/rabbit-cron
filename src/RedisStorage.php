@@ -73,7 +73,7 @@ class RedisStorage implements StorageInterface
      */
     public function incr(string $name, string $column, int $incrby = 1): void
     {
-        ($ret = $this->get($name)) && $ret[$column] = ArrayHelper::getValue($ret, $column, 0) + 1;
+        ($ret = $this->get($name)) && $ret[$column] = ArrayHelper::getValue((array)$ret, $column, 0) + 1;
         $this->redis->set($name, $ret);
     }
 }
